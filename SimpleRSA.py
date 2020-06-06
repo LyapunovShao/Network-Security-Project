@@ -242,7 +242,6 @@ class RSA:
 
         last_ind = len(raw_bytes) - 1
 
-
         while last_ind >= 0 and raw_bytes[last_ind].to_bytes(1, byteorder='big') == b'\x00':
             last_ind -= 1
 
