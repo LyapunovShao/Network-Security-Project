@@ -207,26 +207,29 @@ class RSA:
         raw_bytes = b''
         result = b''
         num = pow(text_int, e, n)
-        
+
         max_uint = 0xffffffffffffffff
-      
+
         while num > 0:
             raw_bytes = raw_bytes + pack('Q', num & max_uint)
             num >>= 64
-   
 
         last_ind = len(raw_bytes) - 1
-        while last_ind >= 0:
-            if raw_bytes[last_ind].to_bytes(1, byteorder='big') != b'\x00' :
-                result = result + raw_bytes[last_ind].to_bytes(1, byteorder='big')
+
+        while last_ind >= 0 and raw_bytes[last_ind].to_bytes(1, byteorder='big') == b'\x00':
             last_ind -= 1
-       
+
+        while last_ind >= 0:
+            result = result + \
+                raw_bytes[last_ind].to_bytes(1, byteorder='big')
+            last_ind -= 1
+
         return result
 
     def decrypt(self, ciphertext, sk):
         n, e, d, p, q = sk
         ciphertext_int = int(binascii.hexlify(ciphertext), 16)
-        
+
         assert ciphertext_int >= 0 and ciphertext_int <= n
         raw_bytes = b''
         result = b''
@@ -238,9 +241,14 @@ class RSA:
             num >>= 64
 
         last_ind = len(raw_bytes) - 1
-        while last_ind >= 0:
-            if raw_bytes[last_ind].to_bytes(1, byteorder='big') != b'\x00' :
-                result = result + raw_bytes[last_ind].to_bytes(1, byteorder='big')
+
+
+        while last_ind >= 0 and raw_bytes[last_ind].to_bytes(1, byteorder='big') == b'\x00':
             last_ind -= 1
-       
+
+        while last_ind >= 0:
+            result = result + \
+                raw_bytes[last_ind].to_bytes(1, byteorder='big')
+            last_ind -= 1
+
         return result
